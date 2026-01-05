@@ -193,6 +193,13 @@ export default function Page() {
           transform: translateY(-6px);
         }
 
+        /* 🔹 IMAGE WRAPPER */
+        .imageWrap {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+
         .button {
           margin-top: 18px;
           background: none;
@@ -237,76 +244,8 @@ export default function Page() {
           align-items: center;
         }
 
-        .cartItem {
-          text-align: center;
-          margin-bottom: 22px;
-        }
-
-        .qty {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin-top: 6px;
-          font-size: 14px;
-        }
-
-        .qty button {
-          background: none;
-          border: none;
-          color: white;
-          cursor: pointer;
-          font-size: 18px;
-          opacity: 0.7;
-        }
-
-        .qty button:hover {
-          opacity: 1;
-        }
-
-        .clear {
-          margin: 12px 0 18px;
-          font-size: 13px;
-          opacity: 0.6;
-          cursor: pointer;
-        }
-
-        .checkout {
-          margin-top: 10px;
-          background: none;
-          border: none;
-          color: white;
-          font-size: 14px;
-          letter-spacing: 0.15em;
-          cursor: pointer;
-          opacity: 0.85;
-        }
-
-        .checkout:hover {
-          opacity: 1;
-        }
-
         /* ===== MOBILE ===== */
         @media (max-width: 768px) {
-          .brand {
-            left: 16px;
-          }
-
-          .cartIcon {
-            right: 16px;
-            font-size: 14px;
-          }
-
-          nav {
-            padding: 8px 14px;
-            font-size: 12px;
-            gap: 12px;
-          }
-
-          .site-title {
-            margin-top: 90px;
-            font-size: 26px;
-          }
-
           .products {
             grid-template-columns: 1fr;
             gap: 48px;
@@ -317,11 +256,13 @@ export default function Page() {
           .card {
             max-width: 360px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
           }
 
-          .cartPanel {
-            width: 100%;
-            padding: 24px 20px;
+          .imageWrap {
+            justify-content: center;
           }
 
           footer {
@@ -351,7 +292,11 @@ export default function Page() {
       <main className="products">
         {PRODUCTS.map((p) => (
           <div className="card" key={p.title}>
-            <Image src={p.image} alt={p.title} width={320} height={320} />
+            {/* ✅ IMAGE FIX */}
+            <div className="imageWrap">
+              <Image src={p.image} alt={p.title} width={320} height={320} />
+            </div>
+
             <h3>{p.title}</h3>
             <p style={{ opacity: 0.75, marginTop: 8 }}>{p.description}</p>
             <p style={{ marginTop: 10, fontWeight: 500 }}>
@@ -394,10 +339,6 @@ export default function Page() {
                 </div>
               </div>
             ))}
-
-            <div className="clear" onClick={clearCart}>
-              Clear Cart
-            </div>
 
             <p>Total: ${total.toFixed(2)}</p>
 
