@@ -203,6 +203,10 @@ export default function Page() {
           opacity: 0.85;
         }
 
+        .button:hover {
+          opacity: 1;
+        }
+
         footer {
           position: fixed;
           bottom: 20px;
@@ -241,16 +245,71 @@ export default function Page() {
         .qty {
           display: flex;
           align-items: center;
-          justify-content: center;
           gap: 14px;
           margin-top: 6px;
           font-size: 14px;
         }
 
+        .qty button {
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          font-size: 18px;
+          opacity: 0.7;
+        }
+
+        .qty button:hover {
+          opacity: 1;
+        }
+
+        .clear {
+          margin: 12px 0 18px;
+          font-size: 13px;
+          opacity: 0.6;
+          cursor: pointer;
+        }
+
+        .checkout {
+          margin-top: 10px;
+          background: none;
+          border: none;
+          color: white;
+          font-size: 14px;
+          letter-spacing: 0.15em;
+          cursor: pointer;
+          opacity: 0.85;
+        }
+
+        .checkout:hover {
+          opacity: 1;
+        }
+
         /* ===== MOBILE ===== */
         @media (max-width: 768px) {
+          .brand {
+            left: 16px;
+          }
+
+          .cartIcon {
+            right: 16px;
+            font-size: 14px;
+          }
+
+          nav {
+            padding: 8px 14px;
+            font-size: 12px;
+            gap: 12px;
+          }
+
+          .site-title {
+            margin-top: 90px;
+            font-size: 26px;
+          }
+
           .products {
             grid-template-columns: 1fr;
+            gap: 48px;
             margin-top: 80px;
             padding: 0 20px;
           }
@@ -258,18 +317,11 @@ export default function Page() {
           .card {
             max-width: 360px;
             margin: 0 auto;
-            text-align: center;
           }
 
-          .card img {
-            margin: 0 auto;
-            display: block;
-          }
-
-          .button {
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
+          .cartPanel {
+            width: 100%;
+            padding: 24px 20px;
           }
 
           footer {
@@ -343,9 +395,13 @@ export default function Page() {
               </div>
             ))}
 
+            <div className="clear" onClick={clearCart}>
+              Clear Cart
+            </div>
+
             <p>Total: ${total.toFixed(2)}</p>
 
-            <button className="button" onClick={handleCheckout}>
+            <button className="checkout" onClick={handleCheckout}>
               Checkout →
             </button>
           </div>
