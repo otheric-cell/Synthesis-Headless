@@ -1,168 +1,369 @@
-'use client'
+"use client"
 
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Float, RoundedBox } from '@react-three/drei'
+import { useEffect, useState } from "react"
+import Image from "next/image"
 
-function ProductModel() {
-  return (
-    <Float speed={1.5} rotationIntensity={0.4} floatIntensity={0.8}>
-      <RoundedBox
-        args={[1.6, 0.45, 1]}
-        radius={0.15}
-        smoothness={6}
-        rotation={[0.1, 0.3, 0]}
-      >
-        <meshPhysicalMaterial
-          color="#e5e5e5"
-          metalness={1}
-          roughness={0.05}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-        />
-      </RoundedBox>
-    </Float>
-  )
+type CartItem = {
+  title: string
+  price: number
+  qty: number
 }
 
-
-
-export default function Page() {
-  return (
-    <main style={styles.page}>
-      {/* HERO */}
-      <section style={styles.hero}>
-<Canvas camera={{ position: [0, 1.6, 3.8], fov: 42 }}>
-  <ambientLight intensity={0.5} />
-  <directionalLight position={[4, 6, 4]} intensity={1} />
-  <directionalLight position={[-4, -2, -4]} intensity={0.4} />
-  <ProductModel />
-  <OrbitControls
-    enableZoom={false}
-    enablePan={false}
-    minPolarAngle={Math.PI / 2.3}
-    maxPolarAngle={Math.PI / 2.1}
-  />
-</Canvas>
-
-
-        <div style={styles.heroText}>
-          <h1 style={styles.title}>Designed. Powerful. Simple.</h1>
-          <p style={styles.subtitle}>
-            Premium tech. Minimal experience.
-          </p>
-        </div>
-      </section>
-
-      {/* PRODUCTS */}
-      <section style={styles.products}>
-        {products.map((p) => (
-          <div key={p.name} style={styles.card}>
-            <h2 style={styles.cardTitle}>{p.name}</h2>
-            <p style={styles.cardDesc}>{p.desc}</p>
-            <p style={styles.price}>{p.price}</p>
-<button
-  style={styles.button}
-  onClick={() => window.open(p.url, '_blank')}
->
-  Buy
-</button>
-          </div>
-        ))}
-      </section>
-    </main>
-  )
-}
-
-const products = [
+const PRODUCTS = [
   {
-    name: 'Pro Max Smartphone',
-    desc: 'Premium smartphone featuring a large display and advanced performance.',
-    price: '$1,299',
-    url: 'https://axiomchurch.myshopify.com/products/17-pro-max',
+    title: "17 Pro Max",
+    price: 899,
+    description:
+      "A refined daily instrument — precision engineered for clarity, speed, and restraint.",
+    image: "/17-pro-max.jpg",
+    stock: 3,
   },
   {
-    name: 'Wireless Over-Ear Headphones',
-    desc: 'Immersive sound with a comfortable over-ear design.',
-    price: '$549',
-    url: 'https://axiomchurch.myshopify.com/products/wireless-sport-bluetooth-headphones-with-in-ear-detect-function',
+    title: "AirPods Pro",
+    price: 199,
+    description:
+      "Immersive sound sculpted for presence. Noise disappears. Atmosphere remains.",
+    image: "/airpods-pro.jpg",
+    stock: 12,
   },
   {
-    name: 'Wireless Earbuds',
-    desc: 'Compact wireless earbuds with active noise cancellation.',
-    price: '$199',
-    url: 'https://axiomchurch.myshopify.com/products/bestpods-third-generation-bluetooth-earphones-with-anc',
+    title: "Max Headphones",
+    price: 299,
+    description:
+      "Designed for long-form listening — weightless, balanced, intentional.",
+    image: "/max-headphones.jpg",
+    stock: 0,
   },
 ]
 
-const styles: { [key: string]: React.CSSProperties } = {
-  page: {
-    minHeight: '100vh',
-    background: '#000',
-    color: '#fff',
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, Inter, sans-serif',
-  },
-  hero: {
-    height: '70vh',
-    position: 'relative',
-  },
-  heroText: {
-    position: 'absolute',
-    bottom: '60px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    textAlign: 'center',
-    maxWidth: '600px',
-  },
-title: {
-  fontSize: '3.2rem',
-  fontWeight: 500,
-  letterSpacing: '-0.03em',
-  marginBottom: '16px',
-},
+export default function Page() {
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [cartOpen, setCartOpen] = useState(false)
+  const [closing, setClosing] = useState(false)
 
-subtitle: {
-  fontSize: '1.05rem',
-  color: '#9a9a9a',
-  lineHeight: 1.6,
-},
+  /* ===== persistence ===== */
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cart")
+      if (saved) setCart(JSON.parse(saved))
+    } catch {
+      localStorage.removeItem("cart")
+    }
+  }, [])
 
- products: {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-  gap: '40px',
-  padding: '100px 12vw',
-},
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart))
+  }, [cart])
 
-card: {
-  background: 'rgba(255,255,255,0.035)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: '28px',
-  padding: '36px',
-  backdropFilter: 'blur(16px)',
-},
+  /* ===== cart logic ===== */
+  const addToCart = (p: typeof PRODUCTS[number]) => {
+    if (p.stock === 0) return
 
-  cardTitle: {
-    fontSize: '1.3rem',
-    fontWeight: 500,
-    marginBottom: '8px',
-  },
-  cardDesc: {
-    fontSize: '0.95rem',
-    color: '#aaa',
-    marginBottom: '16px',
-  },
-  price: {
-    fontSize: '1.1rem',
-    marginBottom: '20px',
-  },
-  button: {
-    padding: '10px 18px',
-    borderRadius: '999px',
-    border: 'none',
-    background: '#fff',
-    color: '#000',
-    cursor: 'pointer',
-    fontWeight: 500,
-  },
+    setCart((prev) => {
+      const found = prev.find((i) => i.title === p.title)
+      if (found)
+        return prev.map((i) =>
+          i.title === p.title ? { ...i, qty: i.qty + 1 } : i
+        )
+      return [...prev, { title: p.title, price: p.price, qty: 1 }]
+    })
+
+    setCartOpen(true)
+    setClosing(false)
+  }
+
+  const updateQty = (title: string, delta: number) => {
+    setCart((prev) =>
+      prev
+        .map((i) =>
+          i.title === title ? { ...i, qty: i.qty + delta } : i
+        )
+        .filter((i) => i.qty > 0)
+    )
+  }
+
+  const clearCart = () => setCart([])
+
+  const closeCart = () => {
+    setClosing(true)
+    setTimeout(() => setCartOpen(false), 300)
+  }
+
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0)
+  const itemCount = cart.reduce((s, i) => s + i.qty, 0)
+
+  return (
+    <>
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          background: radial-gradient(
+            circle at top,
+            #1a1a1a 0%,
+            #0d0d0d 40%,
+            #000000 100%
+          );
+          color: white;
+          font-family: serif;
+        }
+
+        header {
+          position: fixed;
+          top: 20px;
+          left: 0;
+          right: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 20;
+        }
+
+        .brand {
+          position: absolute;
+          left: 40px;
+        }
+
+        nav {
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 999px;
+          padding: 10px 22px;
+          display: flex;
+          gap: 18px;
+          font-size: 14px;
+        }
+
+        nav span:not(:last-child)::after {
+          content: "|";
+          margin-left: 18px;
+          opacity: 0.3;
+        }
+
+        .cartIcon {
+          position: absolute;
+          right: 40px;
+          cursor: pointer;
+        }
+
+        .site-title {
+          margin-top: 120px;
+          text-align: center;
+          font-size: 36px;
+          letter-spacing: 1.5px;
+        }
+
+        .products {
+          margin: 120px auto 0;
+          display: grid;
+          grid-template-columns: repeat(3, 320px);
+          gap: 60px;
+          justify-content: center;
+        }
+
+        .card {
+          text-align: center;
+          transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+          transform: translateY(-6px);
+        }
+
+        .button {
+          margin-top: 18px;
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;
+          opacity: 0.85;
+        }
+
+        .button:hover {
+          opacity: 1;
+        }
+
+        footer {
+          position: fixed;
+          bottom: 20px;
+          right: 30px;
+          font-size: 12px;
+          opacity: 0.6;
+        }
+
+        /* ===== CART ===== */
+        .overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          z-index: 30;
+          animation: fadeIn 0.25s forwards;
+        }
+
+        .overlay.closing {
+          animation: fadeOut 0.25s forwards;
+        }
+
+        .cartPanel {
+          position: fixed;
+          right: 0;
+          top: 0;
+          width: 320px;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.96);
+          padding: 28px;
+          z-index: 40;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          animation: slideIn 0.3s forwards;
+        }
+
+        .cartPanel.closing {
+          animation: slideOut 0.3s forwards;
+        }
+
+        .cartItem {
+          text-align: center;
+          margin-bottom: 22px;
+        }
+
+        .qty {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 6px;
+          font-size: 14px;
+        }
+
+        .qty button {
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          font-size: 18px;
+          line-height: 1;
+          opacity: 0.7;
+        }
+
+        .qty button:hover {
+          opacity: 1;
+        }
+
+        .clear {
+          margin: 12px 0 24px;
+          font-size: 13px;
+          opacity: 0.6;
+          cursor: pointer;
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(100%);
+          }
+        }
+
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeOut {
+          to {
+            opacity: 0;
+          }
+        }
+      `}</style>
+
+      <header>
+        <div className="brand">
+          <Image src="/logo.png" alt="Logo" width={44} height={44} />
+        </div>
+
+        <nav>
+          <span>Home</span>
+          <span>Products</span>
+          <span>Contact</span>
+        </nav>
+
+        <div className="cartIcon" onClick={() => setCartOpen(true)}>
+          🛒 {itemCount}
+        </div>
+      </header>
+
+      <h1 className="site-title">Synthesis Two</h1>
+
+      <main className="products">
+        {PRODUCTS.map((p) => (
+          <div className="card" key={p.title}>
+            <Image src={p.image} alt={p.title} width={320} height={320} />
+            <h3>{p.title}</h3>
+            <p>{p.description}</p>
+            <p>${p.price}</p>
+
+            {p.stock > 0 ? (
+              <>
+                <button className="button" onClick={() => addToCart(p)}>
+                  Add to Cart
+                </button>
+                <div style={{ fontSize: 12, opacity: 0.6 }}>{p.stock} left</div>
+              </>
+            ) : (
+              <div style={{ fontSize: 12, opacity: 0.6 }}>Sold Out</div>
+            )}
+          </div>
+        ))}
+      </main>
+
+      <footer>
+        For any questions or inquiries email axiomsynthesis@gmail.com
+      </footer>
+
+      {cartOpen && (
+        <>
+          <div
+            className={`overlay ${closing ? "closing" : ""}`}
+            onClick={closeCart}
+          />
+          <div className={`cartPanel ${closing ? "closing" : ""}`}>
+            <h3>Cart</h3>
+
+            {cart.map((i) => (
+              <div key={i.title} className="cartItem">
+                {i.title}
+                <div className="qty">
+                  <button onClick={() => updateQty(i.title, -1)}>−</button>
+                  <span>{i.qty}</span>
+                  <button onClick={() => updateQty(i.title, 1)}>+</button>
+                </div>
+              </div>
+            ))}
+
+            <div className="clear" onClick={clearCart}>
+              Clear Cart
+            </div>
+
+            <p>Total: ${total}</p>
+          </div>
+        </>
+      )}
+    </>
+  )
 }
