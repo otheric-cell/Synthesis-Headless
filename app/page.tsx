@@ -92,6 +92,26 @@ export default function Page() {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0)
   const itemCount = cart.reduce((s, i) => s + i.qty, 0)
 
+  const handleCheckout = () => {
+    if (cart.length === 0) return
+
+    const VARIANT_MAP: Record<string, string> = {
+      "17 Pro Max": "43818119364668",
+      "AirPods Pro": "43817073770556",
+      "Max Headphones": "43816270626876",
+    }
+
+    const lineItems = cart
+      .map((item) => {
+        const variantId = VARIANT_MAP[item.title]
+        return variantId ? `${variantId}:${item.qty}` : null
+      })
+      .filter(Boolean)
+      .join(",")
+
+    window.location.href = `https://axiomchurch.myshopify.com/cart/${lineItems}`
+  }
+
   return (
     <>
       <style jsx global>{`
@@ -183,10 +203,6 @@ export default function Page() {
           opacity: 0.85;
         }
 
-        .button:hover {
-          opacity: 1;
-        }
-
         footer {
           position: fixed;
           bottom: 20px;
@@ -201,11 +217,6 @@ export default function Page() {
           inset: 0;
           background: rgba(0, 0, 0, 0.6);
           z-index: 30;
-          animation: fadeIn 0.25s forwards;
-        }
-
-        .overlay.closing {
-          animation: fadeOut 0.25s forwards;
         }
 
         .cartPanel {
@@ -220,11 +231,6 @@ export default function Page() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          animation: slideIn 0.3s forwards;
-        }
-
-        .cartPanel.closing {
-          animation: slideOut 0.3s forwards;
         }
 
         .cartItem {
@@ -235,59 +241,39 @@ export default function Page() {
         .qty {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 14px;
           margin-top: 6px;
           font-size: 14px;
         }
 
-        .qty button {
-          background: none;
-          border: none;
-          color: white;
-          cursor: pointer;
-          font-size: 18px;
-          line-height: 1;
-          opacity: 0.7;
-        }
-
-        .qty button:hover {
-          opacity: 1;
-        }
-
-        .clear {
-          margin: 12px 0 24px;
-          font-size: 13px;
-          opacity: 0.6;
-          cursor: pointer;
-        }
-
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
+        /* ===== MOBILE ===== */
+        @media (max-width: 768px) {
+          .products {
+            grid-template-columns: 1fr;
+            margin-top: 80px;
+            padding: 0 20px;
           }
-          to {
-            transform: translateX(0);
-          }
-        }
 
-        @keyframes slideOut {
-          from {
-            transform: translateX(0);
+          .card {
+            max-width: 360px;
+            margin: 0 auto;
+            text-align: center;
           }
-          to {
-            transform: translateX(100%);
-          }
-        }
 
-        @keyframes fadeIn {
-          to {
-            opacity: 1;
+          .card img {
+            margin: 0 auto;
+            display: block;
           }
-        }
 
-        @keyframes fadeOut {
-          to {
-            opacity: 0;
+          .button {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+          }
+
+          footer {
+            display: none;
           }
         }
       `}</style>
@@ -315,15 +301,19 @@ export default function Page() {
           <div className="card" key={p.title}>
             <Image src={p.image} alt={p.title} width={320} height={320} />
             <h3>{p.title}</h3>
-            <p>{p.description}</p>
-            <p>${p.price}</p>
+            <p style={{ opacity: 0.75, marginTop: 8 }}>{p.description}</p>
+            <p style={{ marginTop: 10, fontWeight: 500 }}>
+              ${p.price.toFixed(2)}
+            </p>
 
             {p.stock > 0 ? (
               <>
                 <button className="button" onClick={() => addToCart(p)}>
                   Add to Cart
                 </button>
-                <div style={{ fontSize: 12, opacity: 0.6 }}>{p.stock} left</div>
+                <div style={{ fontSize: 12, opacity: 0.6 }}>
+                  {p.stock} left
+                </div>
               </>
             ) : (
               <div style={{ fontSize: 12, opacity: 0.6 }}>Sold Out</div>
@@ -338,11 +328,8 @@ export default function Page() {
 
       {cartOpen && (
         <>
-          <div
-            className={`overlay ${closing ? "closing" : ""}`}
-            onClick={closeCart}
-          />
-          <div className={`cartPanel ${closing ? "closing" : ""}`}>
+          <div className="overlay" onClick={closeCart} />
+          <div className="cartPanel">
             <h3>Cart</h3>
 
             {cart.map((i) => (
@@ -356,11 +343,11 @@ export default function Page() {
               </div>
             ))}
 
-            <div className="clear" onClick={clearCart}>
-              Clear Cart
-            </div>
+            <p>Total: ${total.toFixed(2)}</p>
 
-            <p>Total: ${total}</p>
+            <button className="button" onClick={handleCheckout}>
+              Checkout →
+            </button>
           </div>
         </>
       )}
