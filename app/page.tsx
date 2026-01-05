@@ -12,7 +12,7 @@ type CartItem = {
 const PRODUCTS = [
   {
     title: "17 Pro Max",
-    price: 289.95,
+    price: 445.62,
     description:
       "A refined daily instrument — precision engineered for clarity, speed, and restraint.",
     image: "/17-pro-max.jpg",
@@ -20,7 +20,7 @@ const PRODUCTS = [
   },
   {
     title: "AirPods Pro",
-    price: 44.95,
+    price: 161.22,
     description:
       "Immersive sound sculpted for presence. Noise disappears. Atmosphere remains.",
     image: "/airpods-pro.jpg",
@@ -28,7 +28,7 @@ const PRODUCTS = [
   },
   {
     title: "Max Headphones",
-    price: 157.95,
+    price: 349.30,
     description:
       "Designed for long-form listening — weightless, balanced, intentional.",
     image: "/max-headphones.jpg",
