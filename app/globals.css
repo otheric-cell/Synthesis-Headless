@@ -8,28 +8,38 @@
   box-sizing: border-box;
 }
 
+:root {
+  background: radial-gradient(circle at top, #111 0%, #000 70%);
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100%;
-  background: black;
+  background: transparent;
   overscroll-behavior: none;
 }
 
+/* -------------------------------
+   BODY
+-------------------------------- */
+
 body {
-  background: #000;
   color: #e5e7eb;
   font-family: "Cinzel", serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
 
-  /* ===== iOS SAFARI SAFE-AREA FIX ===== */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+/* ✅ iOS SAFARI SAFE-AREA BACKGROUND FIX */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at top, #111 0%, #000 70%);
 }
 
 /* -------------------------------
@@ -61,15 +71,6 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-}
-
-/* -------------------------------
-   PAGE WRAPPER
--------------------------------- */
-
-.page {
-  position: relative;
-  min-height: 100vh;
 }
 
 /* -------------------------------
@@ -112,11 +113,14 @@ p {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* ===== PAGE LOCK ===== */
+/* -------------------------------
+   PAGE WRAPPER
+-------------------------------- */
 
+.page,
 .page-lock {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #111 0%, #000 70%);
+  background: transparent;
   color: white;
   position: relative;
   overflow-x: hidden;
@@ -158,9 +162,10 @@ p {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* ===== PRODUCTS LOCK ===== */
+/* ===== PRODUCTS ===== */
 
-.products-lock {
+.products-lock,
+.products {
   max-width: 1200px;
   margin: 160px auto 0;
   display: grid;
@@ -169,13 +174,15 @@ p {
   padding: 0 40px;
 }
 
-.product {
+.product,
+.card {
   text-align: center;
   padding: 24px;
 }
 
-.product-img {
-  border-radius: 6px;
+.product-img,
+.card img {
+  border-radius: 12px;
 }
 
 .desc {
@@ -190,11 +197,8 @@ p {
 
 button {
   margin-top: 12px;
-  background: none;
   border: 1px solid rgba(255,255,255,0.4);
-  color: white;
   padding: 8px 18px;
-  cursor: pointer;
 }
 
 .stock {
@@ -208,14 +212,15 @@ button {
   opacity: 0.4;
 }
 
-/* ===== CONTACT LOCK ===== */
+/* ===== CONTACT ===== */
 
+.contact,
 .contact-lock {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 30px;
+  font-size: 12px;
   opacity: 0.7;
-  font-size: 14px;
 }
 
 /* ===== NAV CENTERED ===== */
@@ -233,39 +238,6 @@ button {
   z-index: 50;
 }
 
-/* HEADER */
-
-.header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header h1 {
-  font-size: 28px;
-  font-family: serif;
-  font-weight: 500;
-}
-
-/* CART */
-
-.cart-icon {
-  justify-self: end;
-  cursor: pointer;
-  opacity: 0.8;
-}
-
-/* ===== PAGE ===== */
-
-.page {
-  min-height: 100vh;
-  background: black;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 /* ===== HEADER ===== */
 
 .top-bar {
@@ -275,23 +247,4 @@ button {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   padding: 24px 40px;
-}
-
-/* ===== PRODUCTS ===== */
-
-.products {
-  margin-top: 80px;
-  display: grid;
-  grid-template-columns: repeat(3, 320px);
-  gap: 60px;
-}
-
-/* ===== CONTACT ===== */
-
-.contact {
-  position: fixed;
-  bottom: 20px;
-  right: 30px;
-  font-size: 12px;
-  opacity: 0.7;
 }
