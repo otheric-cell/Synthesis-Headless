@@ -16,7 +16,6 @@ const PRODUCTS = [
     description:
       "A refined daily instrument — precision engineered for clarity, speed, and restraint.",
     image: "/17-pro-max.jpg",
-    stock: 10,
   },
   {
     title: "AirPods Pro",
@@ -24,15 +23,13 @@ const PRODUCTS = [
     description:
       "Immersive sound sculpted for presence. Noise disappears. Atmosphere remains.",
     image: "/airpods-pro.jpg",
-    stock: 10,
   },
   {
     title: "Max Headphones",
-    price: 349.30,
+    price: 349.3,
     description:
       "Designed for long-form listening — weightless, balanced, intentional.",
     image: "/max-headphones.jpg",
-    stock: 10,
   },
 ]
 
@@ -42,21 +39,25 @@ export default function Page() {
   const [closing, setClosing] = useState(false)
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("cart")
-      if (saved) setCart(JSON.parse(saved))
-    } catch {
-      localStorage.removeItem("cart")
-    }
+    const saved = localStorage.getItem("cart")
+    if (saved) setCart(JSON.parse(saved))
   }, [])
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart))
   }, [cart])
 
-  const addToCart = (p: typeof PRODUCTS[number]) => {
-    if (p.stock === 0) return
+  const openCart = () => {
+    setClosing(false)
+    setCartOpen(true)
+  }
 
+  const closeCart = () => {
+    setClosing(true)
+    setTimeout(() => setCartOpen(false), 320)
+  }
+
+  const addToCart = (p: typeof PRODUCTS[number]) => {
     setCart((prev) => {
       const found = prev.find((i) => i.title === p.title)
       if (found)
@@ -65,9 +66,7 @@ export default function Page() {
         )
       return [...prev, { title: p.title, price: p.price, qty: 1 }]
     })
-
-    setCartOpen(true)
-    setClosing(false)
+    openCart()
   }
 
   const updateQty = (title: string, delta: number) => {
@@ -80,17 +79,10 @@ export default function Page() {
     )
   }
 
-  const closeCart = () => {
-    setClosing(true)
-    setTimeout(() => setCartOpen(false), 300)
-  }
-
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0)
   const itemCount = cart.reduce((s, i) => s + i.qty, 0)
 
   const handleCheckout = () => {
-    if (cart.length === 0) return
-
     const VARIANT_MAP: Record<string, string> = {
       "17 Pro Max": "43818119364668",
       "AirPods Pro": "43817073770556",
@@ -98,11 +90,7 @@ export default function Page() {
     }
 
     const lineItems = cart
-      .map((item) => {
-        const variantId = VARIANT_MAP[item.title]
-        return variantId ? `${variantId}:${item.qty}` : null
-      })
-      .filter(Boolean)
+      .map((i) => `${VARIANT_MAP[i.title]}:${i.qty}`)
       .join(",")
 
     window.location.href = `https://axiomchurch.myshopify.com/cart/${lineItems}`
@@ -117,107 +105,107 @@ export default function Page() {
           padding: 0;
         }
 
+        html,
         body {
-          background: radial-gradient(
-            circle at top,
-            #1a1a1a 0%,
-            #0d0d0d 40%,
-            #000000 100%
-          );
+          background: #000;
           color: white;
           font-family: serif;
         }
 
-        header {
-          position: fixed;
-          top: 20px;
-          left: 0;
-          right: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 20;
+        .title-bar {
+          background: #141414;
+          padding: 40px 64px 60px;
+          position: relative;
+          margin-top: 28px;
         }
 
-        .brand {
+        .title-nav {
           position: absolute;
-          left: 40px;
-        }
-
-        nav {
-          background: rgba(255, 255, 255, 0.08);
-          border-radius: 999px;
-          padding: 10px 22px;
+          top: 10px;
+          left: 16px;
           display: flex;
-          gap: 18px;
-          font-size: 14px;
+          font-size: 13px;
+          opacity: 0.85;
         }
 
-        nav span:not(:last-child)::after {
+        .title-nav span:not(:last-child)::after {
           content: "|";
-          margin-left: 18px;
-          opacity: 0.3;
+          margin: 0 14px;
+          opacity: 0.35;
         }
 
-        .cartIcon {
+        .cart-link {
           position: absolute;
-          right: 40px;
+          top: 10px;
+          right: 16px;
+          font-size: 13px;
           cursor: pointer;
         }
 
-        /* ✅ ONLY CHANGE IS HERE */
-        .site-title {
-  margin-top: 160px; /* keep this as-is */
-  text-align: center;
-  font-size: 36px;
-  letter-spacing: 1.5px;
+        .cart-count {
+          font-size: 10px;
+          vertical-align: super;
+          margin-left: 2px;
+          opacity: 0.75;
+        }
 
-  position: relative;
-  top: 40px; /* 👈 moves ONLY the title down */
-}
-        .products {
-          margin: 120px auto 0;
-          display: grid;
-          grid-template-columns: repeat(3, 320px);
-          gap: 60px;
+        .logo-wrap {
+          display: flex;
           justify-content: center;
+          margin-bottom: 6px;
+        }
+
+        .logo-spin {
+          animation: spinY 6s linear infinite;
+        }
+
+        @keyframes spinY {
+          from {
+            transform: rotateY(0deg);
+          }
+          to {
+            transform: rotateY(360deg);
+          }
+        }
+
+        .title-bar h1 {
+          text-align: center;
+          font-size: 44px;
+          letter-spacing: 4px;
+          font-weight: 500;
+          margin-top: 6px;
+        }
+
+        .products {
+          display: grid;
+          grid-template-columns: repeat(3, 340px);
+          gap: 64px;
+          justify-content: center;
+          padding: 56px 0 120px;
         }
 
         .card {
           text-align: center;
-          transition: transform 0.4s ease;
+          transition: transform 0.35s ease;
         }
 
         .card:hover {
-          transform: translateY(-6px);
+          transform: translateY(-8px);
         }
 
-        .imageWrap {
+        .card img {
+          border-radius: 18px;
           width: 100%;
-          display: flex;
-          justify-content: center;
+          height: auto;
         }
 
         .button {
-          margin-top: 18px;
           background: none;
           border: none;
           color: white;
           cursor: pointer;
-          font-size: 14px;
-          opacity: 0.85;
-        }
-
-        .button:hover {
-          opacity: 1;
-        }
-
-        footer {
-          position: fixed;
-          bottom: 20px;
-          right: 30px;
-          font-size: 12px;
-          opacity: 0.6;
+          opacity: 0.75;
+          margin-top: 16px;
         }
 
         .overlay {
@@ -225,6 +213,8 @@ export default function Page() {
           inset: 0;
           background: rgba(0, 0, 0, 0.6);
           z-index: 30;
+          opacity: ${closing ? 0 : 1};
+          transition: opacity 0.32s ease;
         }
 
         .cartPanel {
@@ -234,58 +224,72 @@ export default function Page() {
           width: 320px;
           height: 100vh;
           background: rgba(0, 0, 0, 0.96);
-          padding: 28px;
+          padding: 32px;
           z-index: 40;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+          transform: translateX(${closing ? "100%" : "0"});
+          transition: transform 0.32s ease;
+        }
+
+        .cart-close {
+          display: none;
+          font-size: 18px;
+          cursor: pointer;
+          opacity: 0.7;
+          margin-bottom: 8px;
+          text-align: right;
+        }
+
+        footer {
+          position: fixed;
+          bottom: 20px;
+          right: 24px;
+          font-size: 12px;
+          opacity: 0.6;
         }
 
         @media (max-width: 768px) {
           .products {
             grid-template-columns: 1fr;
-            gap: 48px;
-            margin-top: 80px;
-            padding: 0 20px;
+            padding: 40px 20px 140px;
           }
 
-          footer {
-            display: none;
+          .cartPanel {
+            width: 100%;
+          }
+
+          .cart-close {
+            display: block;
           }
         }
       `}</style>
 
-      <header>
-        <div className="brand">
-          <Image src="/logo.png" alt="Logo" width={44} height={44} />
-        </div>
-
-        <nav>
+      <section className="title-bar">
+        <nav className="title-nav">
           <span>Home</span>
           <span>Products</span>
           <span>Contact</span>
         </nav>
 
-        <div className="cartIcon" onClick={() => setCartOpen(true)}>
-          🛒 {itemCount}
+        <div className="cart-link" onClick={openCart}>
+          Cart{itemCount > 0 && <span className="cart-count">{itemCount}</span>}
         </div>
-      </header>
 
-      <h1 className="site-title">Synthesis Two</h1>
+        <div className="logo-wrap">
+          <div className="logo-spin">
+            <Image src="/logo.png" alt="Logo" width={52} height={52} />
+          </div>
+        </div>
+
+        <h1>𝕾𝖞𝖓𝖙𝖍𝖊𝖘𝖎𝖘 𝕿𝖜𝖔</h1>
+      </section>
 
       <main className="products">
         {PRODUCTS.map((p) => (
           <div className="card" key={p.title}>
-            <div className="imageWrap">
-              <Image src={p.image} alt={p.title} width={320} height={320} />
-            </div>
-
+            <Image src={p.image} alt={p.title} width={340} height={340} />
             <h3>{p.title}</h3>
-            <p style={{ opacity: 0.75, marginTop: 8 }}>{p.description}</p>
-            <p style={{ marginTop: 10, fontWeight: 500 }}>
-              ${p.price.toFixed(2)}
-            </p>
-
+            <p>{p.description}</p>
+            <p>${p.price.toFixed(2)}</p>
             <button className="button" onClick={() => addToCart(p)}>
               Add to Cart
             </button>
@@ -301,20 +305,60 @@ export default function Page() {
         <>
           <div className="overlay" onClick={closeCart} />
           <div className="cartPanel">
-            <h3>Cart</h3>
+            <div className="cart-close" onClick={closeCart}>
+              ✕
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h3>Cart</h3>
+              {cart.length > 0 && (
+                <span
+                  onClick={() => setCart([])}
+                  style={{ cursor: "pointer", opacity: 0.6 }}
+                >
+                  Clear
+                </span>
+              )}
+            </div>
 
             {cart.map((i) => (
-              <div key={i.title}>
-                {i.title}
-                <button onClick={() => updateQty(i.title, -1)}>−</button>
-                {i.qty}
-                <button onClick={() => updateQty(i.title, 1)}>+</button>
+              <div key={i.title} style={{ marginTop: 18 }}>
+                <div>{i.title}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 14,
+                    marginTop: 6,
+                  }}
+                >
+                  <span onClick={() => updateQty(i.title, -1)}>−</span>
+                  <span>{i.qty}</span>
+                  <span onClick={() => updateQty(i.title, 1)}>+</span>
+                </div>
               </div>
             ))}
 
-            <p>Total: ${total.toFixed(2)}</p>
-
-            <button onClick={handleCheckout}>Checkout →</button>
+            {cart.length > 0 && (
+              <>
+                <p style={{ marginTop: 24 }}>
+                  Total: ${total.toFixed(2)}
+                </p>
+                <button
+                  onClick={handleCheckout}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "white",
+                    cursor: "pointer",
+                    marginTop: 14,
+                    opacity: 0.85,
+                  }}
+                >
+                  Checkout
+                </button>
+              </>
+            )}
           </div>
         </>
       )}
